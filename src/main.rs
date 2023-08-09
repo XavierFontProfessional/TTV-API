@@ -29,9 +29,12 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let cors = actix_cors::Cors::default()
             .allowed_origin("https://adventure.xavierfont.com")
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_headers(vec![actix_web::http::header::AUTHORIZATION, actix_web::http::header::ACCEPT])
-            .allowed_headers(vec![actix_web::http::header::CONTENT_TYPE])
+            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
+            .allowed_headers(vec![
+                actix_web::http::header::AUTHORIZATION,
+                actix_web::http::header::ACCEPT,
+                actix_web::http::header::CONTENT_TYPE
+            ])
             .max_age(3600);
 
         App::new()
@@ -39,8 +42,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .route("/video_instructions", web::post().to(create_video_instructions))
             .route("/test", web::post().to(test))
-
     })
+
         .bind(("0.0.0.0", 80))?
         .run()
         .await
