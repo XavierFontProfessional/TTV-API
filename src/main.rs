@@ -27,13 +27,19 @@ mod clip;
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     HttpServer::new(|| {
-        let cors = actix_cors::Cors::permissive();
+        let cors = actix_cors::Cors::default()
+            .allowed_origin("https://adventure.xavierfont.com")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![actix_web::http::header::AUTHORIZATION, actix_web::http::header::ACCEPT])
+            .allowed_headers(vec![actix_web::http::header::CONTENT_TYPE])
+            .max_age(3600);
 
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
             .route("/video_instructions", web::post().to(create_video_instructions))
             .route("/test", web::post().to(test))
+
     })
         .bind(("0.0.0.0", 80))?
         .run()
